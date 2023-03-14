@@ -2,7 +2,6 @@ import csv
 from tkinter import *
 import tkinter
 from tkinter import ttk
-#from sqlalchemy import column
 from tkcalendar import Calendar
 from datetime import datetime, timedelta
 
