@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkcalendar import Calendar, DateEntry
-
+#prueba para crear eventos con un clic y una ventana popup
 class CalendarioEventos(tk.Frame):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)

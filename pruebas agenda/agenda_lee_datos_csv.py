@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkcalendar import Calendar
 from datetime import datetime, timedelta
-
+#esta version carga datos desde un csv al widget calendar
 class Agenda:
     def __init__(self):
         self.eventos = []  #creo la variable que almacena los eventos
