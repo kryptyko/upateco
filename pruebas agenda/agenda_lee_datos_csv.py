@@ -145,19 +145,25 @@ class Agenda:
         with open(nombre_archivo, 'r') as archivo:
             lector_csv = csv.DictReader(archivo)
             var_datos_lst = []
+            vardatos =[]
             for fila in lector_csv:
                 var_datos_lst.append(fila)
                 self.agregar_evento(fila["fecha"], fila["hora"], fila["duracion"], fila["titulo"], fila["importancia"], fila["criterios"], fila["detalle"])
-            datos_columnas_seleccionadas = [[fila["fecha"], fila["hora"], fila["titulo"]] for fila in var_datos_lst]
-            for fila in datos_columnas_seleccionadas:
-                listbox.insert(tk.END, fila)
-        
+                self.vardatos=var_datos_lst
+                       
+            return  self.vardatos #devuelvo al programa principal la variable vardatos con todas las citas de la agenda en forma de lista
+    
+    def volcar_datos_listbox(self):
+        """metodo para escribir datos en la listbox"""
+        datos_columnas_seleccionadas = [[fila["fecha"], fila["hora"], fila["titulo"]] for fila in agenda.vardatos] #extraer datos especificos de vardatos
+        for fila in datos_columnas_seleccionadas:
+           listbox.insert(tk.END, fila) #inserto en la listbox los eventos
 
-#Form_principal = Tk() #original
+#Form_principal = Tk() 
 root = tk.Tk() #*
 
 # Establecer el tamaño del Form
-root.geometry("400x400")
+root.geometry("800x800")
 table = ttk.Treeview(root) 
 framecalendario=tk.Frame(root)
 framecalendario.grid(row=0, column=0)
@@ -167,12 +173,11 @@ cal = Calendar(framecalendario, tooltipdelay=10 ,selectmode = 'day',
                day = 22, locale='es_AR',date_pattern="dd-mm-yyyy")
 date = cal.datetime.today()
 fecha_parseada=date.strftime("%d/%m/%Y") #convierto la variable date en un str conel formato que yo quiera
-print(fecha_parseada)
+#print(fecha_parseada)
 #cal.calevent_create(date, 'aca va un evento', 'mensaje') #asi creo un evento calevent
 cal.grid(row=1,column=0,padx=10,pady=10)
 
 agenda = Agenda()
-
 cal.grid(row=5, column=1)
 listbox = tk.Listbox(root)
 listbox.grid(row=7,column=0)
@@ -183,7 +188,11 @@ btn_crear_evento = tk.Button(text="Crear Evento")
 btn_crear_evento.grid(row=8, column=0)
 btn_crear_evento = tk.Button(text="Eliminar Evento")
 btn_crear_evento.grid(row=8, column=1)
-agenda.importar_desde_csv("events2.csv")
+
+agenda.importar_desde_csv("./events2.csv")
+print(agenda.vardatos)
+agenda.volcar_datos_listbox()
+print(agenda.var_datos_lst)
 agenda.agregar_evento("12/03/2023", "10:00", "1 hora", "evento1", "Alta", "Reunión de trabajo", "Presentación del proyecto")
 agenda.agregar_evento("15/03/2023", "14:00", "2 horas", "evento2", "Alta","Entrevista de trabajo", "Conocer al equipo")
 agenda.agregar_evento("18/03/2023", "16:00", "3 horas", "evento3","Alta", "Cita médica", "Chequeo anual")
@@ -193,5 +202,6 @@ agenda.agregar_evento("18/03/2023", "16:00", "3 horas", "evento3","Alta", "Cita 
 #agenda.eliminar_evento(1) #elimino un evento con el id
 agenda.mostrar_eventos()
 agenda.agregar_eventos_mensual()
-agenda.exportar_a_csv("events2.csv")
+agenda.exportar_a_csv("./events2.csv")
+
 root.mainloop()

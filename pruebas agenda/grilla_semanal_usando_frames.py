@@ -1,7 +1,15 @@
+#from cgitb import text
 import tkinter as tk
+from tkinter import ttk
 import datetime
+from datetime import timedelta
 from tkcalendar import Calendar
+#from datetime import datetime, timedelta
+import csv
+
+
 class GrillaSemana(tk.Frame):
+    """clase para crear una grilla semanal"""
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
@@ -33,38 +41,55 @@ class GrillaSemana(tk.Frame):
         # Actualizar celdas de la grilla
         dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
         for i, dia in enumerate(dias_semana):
-            dia_label = tk.Label(self, text=dia)
+            dia_label = tk.Label(self, text=dia) #escribo los encabezados con los dias de la semana
             dia_label.grid(row=1, column=i+2)
 
         intervalo = datetime.timedelta(hours=1)
-        for i in range(8):
+        for i in range(8,21):
             hora = (datetime.datetime.combine(datetime.date.today(), self.hora_inicio) + i * intervalo).time()
             hora_str = hora.strftime("%H:%M")
             hora_label = tk.Label(self, text=hora_str)
             hora_label.grid(row=i+2, column=1)
-            for j in range(7):
+            for j in range(7):#recorro los 7 dias de la semana indicados con un numero del 1 al 7
                 dia = self.fecha_inicio + datetime.timedelta(days=j)
                 celda_label = tk.Label(self, text="")
                 celda_label.grid(row=i+2, column=j+2)
 
         # Crear botones para avanzar y retroceder una semana
-        avanzar_button = tk.Button(self, text="Avanzar semana", command=self.avanzar_semana)
+        avanzar_button = tk.Button(self, text=">", command=self.avanzar_semana)
         avanzar_button.grid(row=0, column=10)
 
-        retroceder_button = tk.Button(self, text="Retroceder semana", command=self.retroceder_semana)
+        retroceder_button = tk.Button(self, text="<", command=self.retroceder_semana)
         retroceder_button.grid(row=0, column=0)
 
-if __name__ == "__main__":
-    # Crear ventana y frame
-    ventana = tk.Tk()
-    
 
-    cal = Calendar(ventana, tooltipdelay=10 ,selectmode = 'day',
-               year = 2023, month = 2,
-               day = 22, locale='es_AR',date_pattern="dd-mm-yyyy")
-    frame = GrillaSemana(master=ventana)
-    frame.grid(row=5, column=5)
-    cal.grid(row=5, column=0)
+# Crear ventana y frame
+root = tk.Tk()
 
-    # Iniciar loop de la aplicación
-    frame.mainloop()
+
+cal = Calendar(root, tooltipdelay=10 ,selectmode = 'day',
+            year = 2023, month = 2,
+            day = 22, locale='es_AR',date_pattern="dd-mm-yyyy")
+frame = GrillaSemana(master=root)
+frame.grid(row=5, column=5)
+cal.grid(row=5, column=1)
+btn_crear_evento = tk.Button(text="Crear Evento")
+btn_crear_evento.grid(row=8, column=0)
+btn_crear_evento = tk.Button(text="Eliminar Evento")
+btn_crear_evento.grid(row=8, column=1)
+
+
+#label_fecha=tk.Label()
+#label_fecha["text"]="Agregar Evento"
+#label_fecha.grid(row=9,column=0)
+#input_fecha = tk.Entry()
+#input_fecha.grid(row=10, column=0)
+#label_fecha=tk.Label()
+#label_fecha["text"]="Hora"
+#label_fecha.grid(row=11,column=0)
+
+#label_fecha["text"]="Hora"
+#label_fecha.grid(row=11,column=0)
+
+# Iniciar loop de la aplicación
+frame.mainloop()
