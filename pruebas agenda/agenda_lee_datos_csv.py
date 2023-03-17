@@ -2,13 +2,16 @@ import csv
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
+from turtle import width
 from tkcalendar import Calendar
 from datetime import datetime, timedelta
 #esta version carga datos desde un csv al widget calendar
+
 class Agenda:
     def __init__(self):
         self.eventos = []  #creo la variable que almacena los eventos
         self.id_counter = 0 #inicializo el contador de id de eventos
+        self.var_datos_lst = []
         
     def agregar_evento(self, fecha, hora, duracion, titul, importancia, criterios, detalle):
         """ metodo para agergar un evento"""
@@ -141,29 +144,14 @@ class Agenda:
     def importar_desde_csv(self, nombre_archivo):
         with open(nombre_archivo, 'r') as archivo:
             lector_csv = csv.DictReader(archivo)
+            var_datos_lst = []
             for fila in lector_csv:
+                var_datos_lst.append(fila)
                 self.agregar_evento(fila["fecha"], fila["hora"], fila["duracion"], fila["titulo"], fila["importancia"], fila["criterios"], fila["detalle"])
-    
+            datos_columnas_seleccionadas = [[fila["fecha"], fila["hora"], fila["titulo"]] for fila in var_datos_lst]
+            for fila in datos_columnas_seleccionadas:
+                listbox.insert(tk.END, fila)
         
-#class CalendarGUI(tk.Frame):
-    
- #   def __init__(self, master=None):
-  #      super().__init__(master)
-   #     self.master = master
-    #    self.init_calendar()
-
-    #def init_calendar(self):
-     #   self.cal = Calendar(self, tooltipdelay=10 ,selectmode='day',
-      #                          year=2023, month=2, day=22, locale='es_AR',
-       #                         date_pattern="dd-mm-yyyy")
-        #self.cal.grid(row=0, column=0)
-        #self.cal.bind('<<CalendarSelected>>', self.on_select) #cuando selecciono se ejecuita el evento on_select
-
-    #def on_select(self, event=None):
-     #   date = self.cal.selection_get()
-      #  fecha_parseada = date.strftime("%d/%m/%Y")
-       # print(fecha_parseada)
-        #self.cal.calevent_create(date, 'aca va un evento', 'mensaje')
 
 #Form_principal = Tk() #original
 root = tk.Tk() #*
@@ -182,8 +170,19 @@ fecha_parseada=date.strftime("%d/%m/%Y") #convierto la variable date en un str c
 print(fecha_parseada)
 #cal.calevent_create(date, 'aca va un evento', 'mensaje') #asi creo un evento calevent
 cal.grid(row=1,column=0,padx=10,pady=10)
-table.grid(row=2,column=0,padx=10,pady=10)
+
 agenda = Agenda()
+
+cal.grid(row=5, column=1)
+listbox = tk.Listbox(root)
+listbox.grid(row=7,column=0)
+root.columnconfigure(0, minsize=100)
+
+
+btn_crear_evento = tk.Button(text="Crear Evento")
+btn_crear_evento.grid(row=8, column=0)
+btn_crear_evento = tk.Button(text="Eliminar Evento")
+btn_crear_evento.grid(row=8, column=1)
 agenda.importar_desde_csv("events2.csv")
 agenda.agregar_evento("12/03/2023", "10:00", "1 hora", "evento1", "Alta", "Reunión de trabajo", "Presentación del proyecto")
 agenda.agregar_evento("15/03/2023", "14:00", "2 horas", "evento2", "Alta","Entrevista de trabajo", "Conocer al equipo")
