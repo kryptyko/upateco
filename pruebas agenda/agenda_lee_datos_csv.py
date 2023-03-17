@@ -2,10 +2,36 @@ import csv
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
-from turtle import width
+
 from tkcalendar import Calendar
 from datetime import datetime, timedelta
 #esta version carga datos desde un csv al widget calendar
+import os
+# Obtener la ruta absoluta del archivo actual (el script de Python).
+abs_path = os.path.abspath(__file__)
+# Obtener el directorio de la ruta del archivo.
+dir_path = os.path.dirname(abs_path)
+# Cambiar la carpeta de trabajo actual a la ubicación del archivo.
+os.chdir(dir_path)
+class TreeViewFrame(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.listratree1=ttk.Treeview(self, columns=("col0","col1", "col2", "col3"), show="headings")
+        self.listratree1.column('col0', width=10)
+        self.listratree1.column('col1', width=100)
+        self.listratree1.column('col2', width=60)
+        self.listratree1.column('col3', stretch=tk.YES) #esta columna tiene ancho automatico
+        self.listratree1.grid(row=0, column=0)
+        self.listratree1.heading("col0", text="ID")
+        self.listratree1.heading("col1", text="Fecha")
+        self.listratree1.heading("col2", text="Hora")
+        self.listratree1.heading("col3", text="Titulo")
+        self.btn_crear_evento = tk.Button(self,text="Crear Evento")
+        self.btn_crear_evento.grid(row=1, column=0,sticky="w")
+        self.btn_crear_evento = tk.Button(self,text="Eliminar Evento")
+        self.btn_crear_evento.grid(row=1, column=0,sticky="e")
+    
+
 
 class Agenda:
     def __init__(self):
@@ -158,15 +184,31 @@ class Agenda:
     
     def volcar_datos_listbox(self):
         """metodo para escribir datos en la listbox"""
-        datos_columnas_seleccionadas = [[fila["fecha"], fila["hora"], fila["titulo"]] for fila in agenda.vardatos] #extraer datos especificos de vardatos
+        datos_columnas_seleccionadas = [[fila["id"],fila["fecha"], fila["hora"], fila["titulo"]] for fila in agenda.vardatos] #extraer datos especificos de vardatos
         for fila in datos_columnas_seleccionadas:
-           listbox.insert(tk.END, fila) #inserto en la listbox los eventos
+           #listbox.insert(tk.END, fila) #inserto en la listbox los eventos
+           #listratree.insert("",tk.END,values=fila) #inserto en el treeview los eventos
+           treeview_frame.listratree1.insert("",tk.END,values=fila)
 
+    
+   # def seleccionar_fila(self,event):
+    #    seleccion = listbox.curselection()
+     #   if len(seleccion) > 0:
+      #      fila_seleccionada = seleccion[0]
+       #     contenido = listbox.get(fila_seleccionada)
+        #    lbl_evento.config(text=contenido)
+    #def mostrar_descripcion_tree(self, event):
+     #   item = listratree.selection()[0]# Obtener el elemento seleccionado
+      #  descripcion = listratree.item(item, "values")[0]# Obtener la tercera columna del elemento seleccionado
+
+       # lbl_evento.config(text=descripcion)# Mostrar la descripción en el Label
 #Form_principal = Tk() 
 root = tk.Tk() #*
-
+treeview_frame = TreeViewFrame(root)
+treeview_frame.place(x=10, y=200,relwidth=0.5)
 # Establecer el tamaño del Form
-root.geometry("800x800")
+root.geometry("800x500")
+root.title("MI PRIMER AGENDA ")
 table = ttk.Treeview(root) 
 framecalendario=tk.Frame(root)
 framecalendario.grid(row=0, column=0)
@@ -182,15 +224,16 @@ cal.grid(row=1,column=0,padx=10,pady=10)
 
 agenda = Agenda()
 cal.grid(row=5, column=1)
-listbox = tk.Listbox(root)
-listbox.grid(row=7,column=0)
+
+lbl_evento=tk.Label(root)
+lbl_evento.grid(row=7,column=1,sticky="nsew")
 root.columnconfigure(0, minsize=100)
 
 
-btn_crear_evento = tk.Button(text="Crear Evento")
-btn_crear_evento.grid(row=8, column=0)
-btn_crear_evento = tk.Button(text="Eliminar Evento")
-btn_crear_evento.grid(row=8, column=1)
+#listratree.bind("<ButtonRelease-1>", agenda.mostrar_descripcion_tree)
+
+
+
 
 agenda.importar_desde_csv("./events2.csv")
 agenda.volcar_datos_listbox() #cargo datos en la listbox
