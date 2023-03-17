@@ -20,12 +20,13 @@ class Agenda:
         if self.verificar_superposicion(fecha_hora, fin_evento):
             print("El nuevo evento se superpone con otro evento existente en la agenda.")
             return
-
         nuevo_evento = {"id": self.id_counter, "fecha": fecha, "hora": hora, "titulo": titul, "duracion": duracion, "importancia": importancia, "criterios": criterios, "detalle": detalle}
         self.eventos.append(nuevo_evento) #agrego el evento
         self.id_counter += 1  #sumo 1 al contador de eventos
+
     def verificar_superposicion(self, fecha_hora, fin_evento):
-        # Verificar si hay algún evento que se superponga con el nuevo evento
+        """metodo para verificar si ya existe un evento con misma fecha y hora o se superpone con otro, devuelve un booleano true o false"""
+        
         for evento in self.eventos:
             inicio_evento = datetime.strptime(evento["fecha"] + " " + evento["hora"], "%d/%m/%Y %H:%M")
             fin_evento_existente = inicio_evento + timedelta(hours=int(evento["duracion"].split()[0]))
@@ -35,19 +36,21 @@ class Agenda:
         return False
 
     def agregar_eventos_mensual(self):
+        """ metodo para agregar eventos en el calendario """
         for evento in self.eventos:
             evento_parseado= datetime.strptime(evento["fecha"] + " " + evento["hora"], "%d/%m/%Y %H:%M")
             cal.calevent_create(evento_parseado, evento["titulo"], 'mensaje')
             
     
     def mostrar_eventos_tk(self):
+        """metodo para mostrar eventos en el calendario mensual y marcarlos con color distinto"""
         for evento in self.eventos:
             evento_parseado= datetime.strptime(evento["fecha"] + " " + evento["hora"], "%d/%m/%Y %H:%M")
-            cal.calevent_create(evento_parseado, evento["titulo"], 'mensaje')
+            cal.calevent_create(evento_parseado, evento["hora"]+evento["titulo"], 'mensaje')
             
 
     def mostrar_eventos(self):
-        """ metodo para mostrar los eventos"""
+        """ metodo para mostrar los eventos en consola"""
         eventos_ordenados = sorted(self.eventos, key=lambda evento: evento["id"]) #ordeno los eventos por numero de id
         for evento in eventos_ordenados: #recorro la lista de eventos evento por evento
             print("ID: ", evento["id"])
@@ -190,10 +193,8 @@ btn_crear_evento = tk.Button(text="Eliminar Evento")
 btn_crear_evento.grid(row=8, column=1)
 
 agenda.importar_desde_csv("./events2.csv")
-print(agenda.vardatos)
-agenda.volcar_datos_listbox()
-print(agenda.var_datos_lst)
-agenda.agregar_evento("12/03/2023", "10:00", "1 hora", "evento1", "Alta", "Reunión de trabajo", "Presentación del proyecto")
+agenda.volcar_datos_listbox() #cargo datos en la listbox
+agenda.agregar_evento("12/03/2023", "10:00", "1 hora", "evento1", "Alta", "Reunión de trabajo", "Presentación del proyecto") #carga manual de eventos para pruebas, si el evento esta repetido o se pisa con algun otro avisa con un print
 agenda.agregar_evento("15/03/2023", "14:00", "2 horas", "evento2", "Alta","Entrevista de trabajo", "Conocer al equipo")
 agenda.agregar_evento("18/03/2023", "16:00", "3 horas", "evento3","Alta", "Cita médica", "Chequeo anual")
 #agenda.mostrar_eventos()
@@ -201,7 +202,8 @@ agenda.agregar_evento("18/03/2023", "16:00", "3 horas", "evento3","Alta", "Cita 
 #agenda.mostrar_eventos()
 #agenda.eliminar_evento(1) #elimino un evento con el id
 agenda.mostrar_eventos()
-agenda.agregar_eventos_mensual()
+#agenda.agregar_eventos_mensual()
+agenda.mostrar_eventos_tk()
 agenda.exportar_a_csv("./events2.csv")
 
 root.mainloop()
