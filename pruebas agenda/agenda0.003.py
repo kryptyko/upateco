@@ -5,7 +5,9 @@
 #   MARCELO ARGAÑARAZ DNI 16722218
 #   NICOLAS LUTRI DNI 32630619
 #----------------------------------------
+#0.00003
 import csv
+from sqlite3 import Row
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
@@ -84,7 +86,8 @@ class Framebottom(tk.Frame):
         self.listratree1.heading("col1", text="Fecha")
         self.listratree1.heading("col2", text="Hora")
         self.listratree1.heading("col3", text="Titulo")
-        self.btn_crear_evento = tk.Button(self.frame1,text="Crear Evento",command=self.crearevento_tk)
+        
+        self.btn_crear_evento = tk.Button(self.frame1,text="Crear Evento",command=creareventotk1)
         #self.btn_crear_evento.pack(side="left")
         self.btn_borrar_evento=tk.Button(self.frame1,text="Eliminar Evento")
         #self.btn_borrar_evento.pack(side="right")
@@ -94,40 +97,66 @@ class Framebottom(tk.Frame):
 
     def crearevento_tk(self):
         self.ventana = tk.Toplevel(self)
-        self.ventana.geometry("350x200")
+        self.ventana.geometry("350x300")
         self.ventana.title("Crear evento")
         self.variable_checkbox = tk.BooleanVar()
+        self.horas = []
+        
+        
+
         self.etiqueta_fecha = tk.Label(self.ventana, text="Fecha:")
         self.etiqueta_fecha.grid(row=0, column=0)
         self.fecha = DateEntry(self.ventana, width=12, background="darkblue", foreground="white", borderwidth=2)
         self.fecha.grid(row=0, column=1)
         
-        self.etiqueta_hora = tk.Label(self.ventana, text="Hora HH:mm:ss")
+        imprimirfecha=self.fecha.get_date()
+        self.fechasrt = imprimirfecha.strftime('%d/%m/%Y')
+        print(self.fechasrt)
+        
+        self.etiqueta_hora = tk.Label(self.ventana, text="Hs de inicio")
         self.etiqueta_hora.grid(row=1, column=0)
-        self.hora = tk.Entry(self.ventana)
-        self.hora.grid(row=1, column=1)
+        self.horas = [f"{i}:00" for i in range(8, 21)] # Crear una lista con las horas de 8:00 a 20:00
+        self.spinbox = Spinbox(self.ventana, values=self.horas) # Usar la lista de horas como los valores permitidos en el Spinbox
+        self.spinbox.grid(row=1,column=1)
+
+        self.etiqueta_duracion = tk.Label(self.ventana, text="Duracion en hs")
+        self.etiqueta_duracion.grid(row=2, column=0)
+        self.horas_d = [f"{i}" for i in range(1, 5)] # Crear una lista con la duracion de 1 a 4
+        self.spinbox_d = Spinbox(self.ventana, values=self.horas_d) # Usar la lista de horas como los valores permitidos en el Spinbox
+        self.spinbox_d.grid(row=2,column=1)
+        
+        
 
         self.etiqueta_titulo = tk.Label(self.ventana, text="Título:")
-        self.etiqueta_titulo.grid(row=2, column=0)
+        self.etiqueta_titulo.grid(row=3, column=0)
         self.titulo = tk.Entry(self.ventana)
-        self.titulo.grid(row=2, column=1)
+        self.titulo.grid(row=3, column=1)
         
         self.etiqueta_descripcion = tk.Label(self.ventana, text="Descripción:")
-        self.etiqueta_descripcion.grid(row=3, column=0)
+        self.etiqueta_descripcion.grid(row=4, column=0)
         self.descripcion = tk.Entry(self.ventana)
-        self.descripcion.grid(row=3, column=1)
+        self.descripcion.grid(row=4, column=1)
         
+        self.etiqueta_pclaves = tk.Label(self.ventana, text="Palabras clave:")
+        self.etiqueta_pclaves.grid(row=6, column=0)
+        self.descripcion_pclaves = tk.Entry(self.ventana)
+        self.descripcion_pclaves.grid(row=6, column=1)
+
         self.etiqueta_detalle = tk.Label(self.ventana, text="Detalle:")
-        self.etiqueta_detalle.grid(row=4, column=0)
+        self.etiqueta_detalle.grid(row=5, column=0)
         self.detalle = tk.Entry(self.ventana)
-        self.detalle.grid(row=4, column=1)
+        self.detalle.grid(row=5, column=1)
                 
         self.checkbox = tk.Checkbutton(self.ventana, text="Es importante?", variable=self.variable_checkbox)
-        self.checkbox.grid(row=5,column=1)    
-        
-        boton_guardar = tk.Button(self.ventana, text="Guardar", command=lambda: agenda.agregar_evento(self.fecha.get_date(),self.hora.get(), self.titulo.get(),self.descripcion.get(),self.detalle.get(),self.variable_checkbox.get(),self.ventana))
+        self.checkbox.grid(row=7,column=1)    
+        #agenda.agregar_evento("12/03/2023", "10:00", "1 hora", "evento1", "Alta", "Reunión de trabajo", "Presentación del proyecto") #carga manual de eventos para pruebas, si el evento esta repetido o se pisa con algun otro avisa con un print
+        #boton_guardar = tk.Button(self.ventana, text="Guardar", command=lambda: agenda.agregar_evento(fechasrt,self.spinbox.get(), self.spinbox_d.get(),self.titulo.get(),self.variable_checkbox.get(),self.descripcion.get(),self.detalle.get()))
+        boton_guardar = tk.Button(self.ventana, text="Guardar", command=agenda.creareventotk1)
         boton_guardar.grid(row=10, column=1)
-
+    def botonguardarevento(self):
+        self.genda=Agenda()
+        self.genda.agregar_evento(self.fechasrt,self.spinbox.get(), self.spinbox_d.get(),self.titulo.get(),self.variable_checkbox.get(),self.descripcion.get(),self.detalle.get())
+        self.genda.volcar_datos_listbox() #cargo datos en la listbox pero se estan repitiendo
 class TreeViewFrame(tk.Frame):
     """clase para crear el frame y un par de botones"""
     def __init__(self, master):
@@ -140,6 +169,7 @@ class TreeViewFrame(tk.Frame):
 class Agenda:
     """ clase agenda que permite crear modificar y eliminar eventos, tambien busca eventos que se repitan """
     def __init__(self):
+        #global eventos 
         self.eventos = []  #creo la variable que almacena los eventos
         self.id_counter = 0 #inicializo el contador de id de eventos
         self.var_datos_lst = []
@@ -155,6 +185,9 @@ class Agenda:
         nuevo_evento = {"id": self.id_counter, "fecha": fecha, "hora": hora, "titulo": titul, "duracion": duracion, "importancia": importancia, "criterios": criterios, "detalle": detalle}
         self.eventos.append(nuevo_evento) #agrego el evento
         self.id_counter += 1  #sumo 1 al contador de eventos
+        agenda.exportar_a_csv("./events2.csv") #guardo eventos al csv
+        
+
 
     def verificar_superposicion(self, fecha_hora, fin_evento):
         """metodo para verificar si ya existe un evento con misma fecha y hora o se superpone con otro, devuelve un booleano true o false"""
@@ -292,8 +325,12 @@ class Agenda:
                        
             return  self.vardatos #devuelvo al programa principal la variable vardatos con todas las citas de la agenda en forma de lista
     
+    def volcar_1_dato_listbox(self,dato):
+        dato_filtrado= [[fila["id"],fila["fecha"], fila["hora"], fila["titulo"]] for fila in dato]
+
     def volcar_datos_listbox(self):
         """metodo para escribir datos en la listbox"""
+        framebot.listratree1.delete(*framebot.listratree1.get_children())
         datos_columnas_seleccionadas = [[fila["id"],fila["fecha"], fila["hora"], fila["titulo"]] for fila in agenda.vardatos] #extraer datos especificos de vardatos
         for fila in datos_columnas_seleccionadas:
            #listbox.insert(tk.END, fila) #inserto en la listbox los eventos
@@ -325,7 +362,83 @@ class utiles:
         self.eventos_ordenados_f_h= sorted(var_datos_lst, key=lambda x: (Utiles.convertir_fecha_hora(x['fecha'], x['hora']))) #ordeno
         return eventos_ordenados_f_h
     
+def creareventotk1():
+    global fechasrt, spinbox,titulo,variable_checkbox,descripcion,detalle,spinbox_d,fecha
+    ventana = tk.Toplevel()
+    ventana.geometry("350x300")
+    ventana.title("Crear evento")
+    variable_checkbox = tk.BooleanVar()
+    horas = []
+        
+        
+
+    etiqueta_fecha = tk.Label(ventana, text="Fecha:")
+    etiqueta_fecha.grid(row=0, column=0)
+    fecha = DateEntry(ventana, width=12, background="darkblue", foreground="white", borderwidth=2)
+    fecha.grid(row=0, column=1)
+        
+    imprimirfecha=fecha.get_date()
+    fechasrt = imprimirfecha.strftime('%d/%m/%Y')
+    print(fechasrt)
+        
+    etiqueta_hora = tk.Label(ventana, text="Hs de inicio")
+    etiqueta_hora.grid(row=1, column=0)
+    horas = [f"{i}:00" for i in range(8, 21)] # Crear una lista con las horas de 8:00 a 20:00
+    spinbox = Spinbox(ventana, values=horas) # Usar la lista de horas como los valores permitidos en el Spinbox
+    spinbox.grid(row=1,column=1)
+
+    etiqueta_duracion = tk.Label(ventana, text="Duracion en hs")
+    etiqueta_duracion.grid(row=2, column=0)
+    horas_d = [f"{i}" for i in range(1, 5)] # Crear una lista con la duracion de 1 a 4
+    spinbox_d = Spinbox(ventana, values=horas_d) # Usar la lista de horas como los valores permitidos en el Spinbox
+    spinbox_d.grid(row=2,column=1)
+        
+     
+    etiqueta_titulo = tk.Label(ventana, text="Título:")
+    etiqueta_titulo.grid(row=3, column=0)
+    titulo = tk.Entry(ventana)
+    titulo.grid(row=3, column=1)
+        
+    etiqueta_descripcion = tk.Label(ventana, text="Descripción:")
+    etiqueta_descripcion.grid(row=4, column=0)
+    descripcion = tk.Entry(ventana)
+    descripcion.grid(row=4, column=1)
+        
+    etiqueta_pclaves = tk.Label(ventana, text="Palabras clave:")
+    etiqueta_pclaves.grid(row=6, column=0)
+    descripcion_pclaves = tk.Entry(ventana)
+    descripcion_pclaves.grid(row=6, column=1)
+
+    etiqueta_detalle = tk.Label(ventana, text="Detalle:")
+    etiqueta_detalle.grid(row=5, column=0)
+    detalle = tk.Entry(ventana)
+    detalle.grid(row=5, column=1)
+                
+    checkbox = tk.Checkbutton(ventana, text="Es importante?", variable=variable_checkbox)
+    checkbox.grid(row=7,column=1)    
+        #agenda.agregar_evento("12/03/2023", "10:00", "1 hora", "evento1", "Alta", "Reunión de trabajo", "Presentación del proyecto") #carga manual de eventos para pruebas, si el evento esta repetido o se pisa con algun otro avisa con un print
+        #boton_guardar = tk.Button(self.ventana, text="Guardar", command=lambda: agenda.agregar_evento(fechasrt,self.spinbox.get(), self.spinbox_d.get(),self.titulo.get(),self.variable_checkbox.get(),self.descripcion.get(),self.detalle.get()))
     
+    boton_guardar = tk.Button(ventana, text="Guardar", command=botonguardarevento)
+    boton_guardar.grid(row=10, column=1)
+    
+    return fechasrt,spinbox,titulo,variable_checkbox,descripcion,detalle
+
+def botonguardarevento():
+    imprimirfecha=fecha.get_date()
+    fechasrt = imprimirfecha.strftime('%d/%m/%Y')
+    spinbox1=spinbox.get()
+    spinbox_d1=spinbox_d.get()
+    titulo1=titulo.get()
+    variable_checkbox1=variable_checkbox.get()
+    descripcion1=descripcion.get()
+    detalle1=detalle.get()
+
+    agenda.agregar_evento(fechasrt,spinbox1, spinbox_d1,titulo1,variable_checkbox1,descripcion1,detalle1)
+    agenda.volcar_datos_listbox() #cargo datos en la listbox pero se estan repitiendo
+    agenda.exportar_a_csv("./events2.csv")
+
+        
 
 root = tk.Tk() 
 framebot=Framebottom(root) #frame inferior, ocupa toda la parte de abajo
