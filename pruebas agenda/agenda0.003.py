@@ -6,6 +6,10 @@
 #   NICOLAS LUTRI DNI 32630619
 #----------------------------------------
 #0.00003
+#changelog
+#
+
+
 import csv
 from sqlite3 import Row
 from tkinter import *
