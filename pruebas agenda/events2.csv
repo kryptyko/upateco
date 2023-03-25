@@ -1,5 +1,5 @@
-id,fecha,hora,duracion,titulo,importancia,criterios,detalle
-0,12/03/2023,10:00,1 hora,evento1,Alta,Reunión de trabajo,Presentación del proyecto
-1,15/03/2023,14:00,2 horas,evento2,Alta,Entrevista de trabajo,Conocer al equipo
-2,18/03/2023,16:00,3 horas,evento3,Alta,Cita médica,Chequeo anual
-3,12/03/2023,15:00,1 hora,presentacion de proyecto,Alta,Reunión de trabajo,Presentación del proyecto
+id,fecha,hora,duracion,titulo,importancia,criterios,detalle,semana
+0,12/03/2023,10:00,1 hora,evento1,True,Reunión de trabajo,Presentación del proyecto,10
+1,15/03/2023,14:00,2 horas,evento2,False,Entrevista de trabajo,Conocer al equipo,11
+2,18/03/2023,16:00,3 horas,evento3,False,Cita médica,Chequeo anual,11
+3,23/03/2023,13:00,1,cumpleaños,True,de juan,cumpleaños de juan,12
