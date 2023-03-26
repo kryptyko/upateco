@@ -15,6 +15,7 @@
 # 25/3 20hs se agrego numero de semana al csv
 # 20hs se agregaron colores al treeview, segun la importancia
 # 21hs se agrego evento borrar al boton, borra del csv y del treeview, pero no renumera los id
+#22 se arreglo chapuceramente el evento botonguardar, ahora muestra en el treeview
 
 import csv
 
@@ -22,8 +23,6 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import askokcancel, showinfo
-
-
 from tkcalendar import Calendar, DateEntry
 import datetime
 from datetime import *
@@ -482,8 +481,10 @@ def botonguardarevento():
     detalle1=detalle.get()
 
     agenda.agregar_evento(fechasrt,spinbox1, spinbox_d1,titulo1,variable_checkbox1,descripcion1,detalle1)
-    agenda.volcar_datos_listbox() #cargo datos en la listbox pero se estan repitiendo
+    
     agenda.exportar_a_csv("./events2.csv")
+    agenda.importar_desde_csv("./events2.csv")
+    agenda.volcar_datos_listbox() #cargo datos en la listbox pero se estan repitiendo
 
         
 
