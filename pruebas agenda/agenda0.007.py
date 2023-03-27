@@ -255,7 +255,7 @@ class frametopleft(tk.Frame):
         super().__init__(master)
         self.frametopl=tk.Frame(master, width=0, height=0,bg="blue")
         self.frametopl.grid(row=1,column=0)
-        
+        #comentario
 class EventosSemanalesFrame(ttk.Frame):
     def __init__(self, parent, fechas_ordenadas):
         super().__init__(parent)
