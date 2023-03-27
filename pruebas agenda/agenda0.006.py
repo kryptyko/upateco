@@ -35,7 +35,6 @@ dir_path = os.path.dirname(abs_path)
 # Cambiar la carpeta de trabajo actual a la ubicación del archivo.
 os.chdir(dir_path)
 var_datos_lst=[]
-global fecha_seleccionada
 class Agenda:
     """ clase agenda que permite crear modificar y eliminar eventos, tambien busca eventos que se repitan """
     def __init__(self):
@@ -44,9 +43,14 @@ class Agenda:
         self.id_counter = 0 #inicializo el contador de id de eventos
         self.var_datos_lst = []
         global vardatos
-       
+        global fecha_seleccionada
 
-    
+    def actualizar_dateentry(self, event):
+        fecha_seleccionada = cal.selection_get()
+        print(fecha_seleccionada)
+        #self.selector_fecha.set_date(fecha_seleccionada)
+        
+        return fecha_seleccionada
 
     def agregar_evento(self, fecha, hora, duracion, titul, importancia, criterios, detalle):
         """ metodo para agregar un evento"""
@@ -267,8 +271,6 @@ class EventosSemanalesFrame(ttk.Frame):
         self.treeview_semanal.pack(fill="both", expand=True)
         self.selector_fecha.bind("<<DateEntrySelected>>", lambda _: self.mostrar_eventos_en_tabla())
         self.mostrar_eventos_en_tabla()
-    
-    
 
     def obtener_eventos_por_hora_y_dia(self):
         semana_actual = self.selector_fecha.get_date().isocalendar()[1]
@@ -325,10 +327,9 @@ class Framebottom(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.configure(width=600,height=600)
-        
         self.frame1=tk.Frame(root, width=600, height=600)
         self.frame1.place(x=10, y=450,relwidth=0.9)
-        self.listratree1=ttk.Treeview(self, columns=("col0","col1", "col2", "col3"), show="headings")
+        self.listratree1=ttk.Treeview(self.frame1, columns=("col0","col1", "col2", "col3"), show="headings")
         self.listratree1.column('col0',width=30)
         self.listratree1.column('col1',width=100)
         self.listratree1.column('col2',width=100)
@@ -537,13 +538,7 @@ def botonguardarevento():
     agenda.volcar_datos_listbox() #cargo datos en la listbox pero se estan repitiendo
 
 
-def actualizar_dateentry(event):
-        fecha_seleccionada = cal.selection_get()
-        print(fecha_seleccionada)
         
-        #self.selector_fecha.set_date(fecha_seleccionada)
-        
-        return fecha_seleccionada     
 
 root = tk.Tk() 
 agenda = Agenda() #instancio la agenda
@@ -600,5 +595,5 @@ Utiles.ordenareventos(var_datos_lst)
 #eventos_ordenados_f_h= sorted(var_datos_lst, key=lambda x: (Utiles.convertir_fecha_hora(x['fecha'], x['hora']))) #ordeno
 print(Utiles.eventos_ordenados_f_h)
 print(var_datos_lst)
-cal.bind("<<CalendarSelected>>", actualizar_dateentry)
+cal.bind("<<CalendarSelected>>", agenda.actualizar_dateentry)
 root.mainloop()
