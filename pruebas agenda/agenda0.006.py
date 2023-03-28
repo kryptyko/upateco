@@ -19,6 +19,7 @@
 #intento con grilla semanal
 
 import csv
+from tkinter.font import Font
 
 from tkinter import *
 import tkinter as tk
@@ -215,9 +216,10 @@ class Agenda:
     def volcar_datos_listbox(self):
         """metodo para escribir datos en la listbox"""
         framebot.listratree1.delete(*framebot.listratree1.get_children()) #limpio la lista para que no se repitane evntos
-        datos_columnas_seleccionadas = [[fila["id"],fila["fecha"], fila["hora"], fila["titulo"],fila["importancia"]] for fila in agenda.vardatos] #extraer datos especificos de vardatos
+        datos_columnas_seleccionadas = [[fila["id"],fila["fecha"], fila["hora"], fila["duracion"], fila["titulo"],fila["importancia"],] for fila in agenda.vardatos] #extraer datos especificos de vardatos
+        datos_nomostrados=[[fila["detalle"]]for fila in agenda.vardatos]
         for fila in datos_columnas_seleccionadas:
-           if fila[4]=="True":
+           if fila[5]=="True":
             print(fila[0])
             framebot.listratree1.insert("",tk.END,values=fila,tags=("color",))
            else:
@@ -236,9 +238,17 @@ class Agenda:
         #    lbl_evento.config(text=contenido)
     def mostrar_descripcion_tree(self, event):
         item = framebot.listratree1.selection()[0]# Obtener el elemento seleccionado
-        descripcion = framebot.listratree1.item(item, "values")[0]# Obtener la tercera columna del elemento seleccionado
-        lbl_evento.config(text=descripcion)# Mostrar la descripción en el Label
+        id = framebot.listratree1.item(item, 'text')
 
+        descripcion = framebot.listratree1.item(item, "values")[0]# Obtener la tercera columna del elemento seleccionado
+        
+        for evento in self.eventos:
+            if evento['id'] == int(descripcion):
+                detalle = evento['detalle']
+                break
+        lbl_evento.config(text=detalle)# Mostrar la descripción en el Label
+        
+        
 
 
 class frametopmenu(tk.Frame):
@@ -328,21 +338,23 @@ class Framebottom(tk.Frame):
         super().__init__(master)
         self.configure(width=600,height=600)
         self.frame1=tk.Frame(root, width=600, height=600)
-        self.frame1.place(x=10, y=450,relwidth=0.9)
-        self.listratree1=ttk.Treeview(self.frame1, columns=("col0","col1", "col2", "col3"), show="headings")
-        self.listratree1.column('col0',width=30)
-        self.listratree1.column('col1',width=100)
-        self.listratree1.column('col2',width=100)
-        self.listratree1.column('col3',width=300) #esta columna tiene ancho automatico stretch=tk.YES 
-        
-        self.listratree1.grid(row=0, column=0,sticky="nswe")
-        
+        self.frame1.place(x=10, y=450,relwidth=1)
+        self.listratree1=ttk.Treeview(self.frame1, columns=("col0","col1", "col2", "col3","col4","col5"), show="headings")
+        self.listratree1.column('col0',width=30)#id
+        self.listratree1.column('col1',width=100)#fecha
+        self.listratree1.column('col2',width=100)#hora
+        self.listratree1.column('col3',width=100) #duracion
+        self.listratree1.column('col4',width=350)#titulo
+        self.listratree1.column('col5',width=0)#importancia
+        self.listratree1.grid(row=0, column=0)
         #self.frame1.rowconfigure(0,weight=1)
         #self.listratree1.pack(side="top", fill="both", expand=False)
         self.listratree1.heading("col0", text="Nº")
         self.listratree1.heading("col1", text="Fecha")
         self.listratree1.heading("col2", text="Hora")
-        self.listratree1.heading("col3", text="Titulo")
+        self.listratree1.heading("col3", text="Duracion")
+        self.listratree1.heading("col4", text="Titulo")
+        self.listratree1.heading("col5", text="")
         
         self.btn_crear_evento = tk.Button(self.frame1,text="Crear Evento",command=creareventotk1)
         #self.btn_crear_evento.pack(side="left")
@@ -351,7 +363,7 @@ class Framebottom(tk.Frame):
         self.btn_crear_evento.grid(row=1, column=0,sticky="w")
         #self.btn_crear_evento = tk.Button(self.frame1,text="Eliminar Evento")
         self.btn_borrar_evento.grid(row=1, column=0,sticky="e")
-
+        
     
     def crearevento_tk(self):
         self.ventana = tk.Toplevel(self)
@@ -568,11 +580,13 @@ fecha_parseada=date.strftime("%d/%m/%Y") #convierto la variable date en un str c
 
 #print(fecha_parseada)
 #cal.calevent_create(date, 'aca va un evento', 'mensaje') #asi creo un evento calevent, comentario para uso interno
+fuente = Font(family='Helvetica', size=20)
+lbl_evento=tk.Label(root,font=fuente) #label para mostrar los detalles del evento, todavia no se usa, falta terminar
+lbl_evento.place(x=750,y=450)
+
+#lbl_evento.grid(row=0,column=1,sticky="nsew")
 
 
-
-lbl_evento=tk.Label(root) #label para mostrar los detalles del evento, todavia no se usa, falta terminar
-lbl_evento.grid(row=7,column=1,sticky="nsew")
 #root.columnconfigure(0, minsize=100)
 
 framebot.listratree1.bind("<ButtonRelease-1>", agenda.mostrar_descripcion_tree)#capturo el evento soltarboton para saber que fila del treeview esta seleccionada

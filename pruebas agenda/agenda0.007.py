@@ -62,11 +62,12 @@ class Agenda:
         if self.verificar_superposicion(fecha_hora, fin_evento):
             print("El nuevo evento se superpone con otro evento existente en la agenda.")
             return
-        
+        self.id_counter += 1
         nuevo_evento = {"id": self.id_counter, "fecha": fecha, "hora": hora, "titulo": titul, "duracion": duracion, "importancia": importancia, "criterios": criterios, "detalle": detalle}
         nuevo_evento["semana"] = semana
+        
         self.eventos.append(nuevo_evento) #agrego el evento
-        self.id_counter += 1  #sumo 1 al contador de eventos
+          #sumo 1 al contador de eventos
         agenda.exportar_a_csv("./events2.csv") #guardo eventos al csv
         
 
@@ -99,17 +100,18 @@ class Agenda:
     
 
     def mostrar_eventos(self):
+        pass
         """ metodo para mostrar los eventos en consola"""
-        eventos_ordenados = sorted(self.eventos, key=lambda evento: evento["id"]) #ordeno los eventos por numero de id
-        for evento in eventos_ordenados: #recorro la lista de eventos evento por evento
-            print("ID: ", evento["id"])
-            print("Fecha: ", evento["fecha"])
-            print("Hora: ", evento["hora"])
-            print("Duración: ", evento["duracion"])
-            print("Importancia: ", evento["importancia"])
-            print("Criterios de búsqueda: ", evento["criterios"])
-            print("Detalle: ", evento["detalle"])
-            print()
+        #eventos_ordenados = sorted(self.eventos, key=lambda evento: evento["id"]) #ordeno los eventos por numero de id
+        #for evento in eventos_ordenados: #recorro la lista de eventos evento por evento
+         #   print("ID: ", evento["id"])
+          #  print("Fecha: ", evento["fecha"])
+           # print("Hora: ", evento["hora"])
+           # print("Duración: ", evento["duracion"])
+           # print("Importancia: ", evento["importancia"])
+            #print("Criterios de búsqueda: ", evento["criterios"])
+            #print("Detalle: ", evento["detalle"])
+            #print()
         
     def modificar_evento(self, id, fecha=None, hora=None, duracion=None, tit=None, importancia=None, criterios=None, detalle=None):
         """metodo para modificar un evento por numero de id, le tengo q pasar como parametro el id y alguno de los atributos a modificar"""
@@ -199,6 +201,7 @@ class Agenda:
     
     def importar_desde_csv(self, nombre_archivo):
         global var_datos_lst
+        global id_counter
         with open(nombre_archivo, 'r') as archivo:
             lector_csv = csv.DictReader(archivo)
             var_datos_lst = []
@@ -207,9 +210,14 @@ class Agenda:
                 var_datos_lst.append(fila)
                 self.agregar_evento(fila["fecha"], fila["hora"], fila["duracion"], fila["titulo"], fila["importancia"], fila["criterios"], fila["detalle"])
                 self.vardatos=var_datos_lst
-            Utiles.ordenareventos(var_datos_lst)  
-            print(var_datos_lst)        
-            return  self.vardatos,self.var_datos_lst #devuelvo al programa principal la variable vardatos con todas las citas de la agenda en forma de lista
+            eventos_ordenados_id = sorted(self.eventos, key=lambda evento: int(evento["id"]))
+            self.eventos=eventos_ordenados_id
+            self.id_counter = int(str(self.eventos[-1]['id'][-1]))
+
+            
+            #Utiles.ordenareventos(var_datos_lst)  
+            #print(var_datos_lst)        
+            return  self.vardatos,self.var_datos_lst, self.id_counter #devuelvo al programa principal la variable vardatos con todas las citas de la agenda en forma de lista
     
     def volcar_1_dato_listbox(self,dato):
         dato_filtrado= [[fila["id"],fila["fecha"], fila["hora"], fila["titulo"]] for fila in dato]
@@ -259,7 +267,8 @@ class frametopleft(tk.Frame):
 class EventosSemanalesFrame(ttk.Frame):
     def __init__(self, parent, fechas_ordenadas):
         super().__init__(parent)
-        self.fechas_ordenadas = fechas_ordenadas
+        self.fechas_ordenadas = sorted(fechas_ordenadas, key=lambda evento: evento["hora"])
+        #self.fechas_ordenadas = fechas_ordenadas
         self.selector_fecha = DateEntry(self, width=12, background='darkblue',
                                         foreground='white', borderwidth=2, locale='es_ES')
         self.selector_fecha.pack(padx=10, pady=10)
@@ -318,7 +327,7 @@ class frametoprigth(tk.Frame):
         super().__init__(master)
         self.frametopr=tk.Frame(master, width=600, height=400,bg="black")
         self.frametopr.grid(column=1,row=1)
-        eventos_semanales_frame = EventosSemanalesFrame(self.frametopr,var_datos_lst )
+        eventos_semanales_frame = EventosSemanalesFrame(self.frametopr,agenda.vardatos)
         eventos_semanales_frame.grid(row=0,column=0)
         
 
@@ -580,9 +589,9 @@ framebot.listratree1.bind("<ButtonRelease-1>", agenda.mostrar_descripcion_tree)#
    
 
 
-agenda.agregar_evento("12/03/2023", "10:00", "1 hora", "evento1", "True", "Reunión de trabajo", "Presentación del proyecto") #carga manual de eventos para pruebas, si el evento esta repetido o se pisa con algun otro avisa con un print
-agenda.agregar_evento("15/03/2023", "14:00", "2 horas", "evento2", "False","Entrevista de trabajo", "Conocer al equipo")
-agenda.agregar_evento("18/03/2023", "16:00", "3 horas", "evento3","False", "Cita médica", "Chequeo anual")
+#agenda.agregar_evento("12/03/2023", "10:00", "1 hora", "evento1", "True", "Reunión de trabajo", "Presentación del proyecto") #carga manual de eventos para pruebas, si el evento esta repetido o se pisa con algun otro avisa con un print
+#agenda.agregar_evento("15/03/2023", "14:00", "2 horas", "evento2", "False","Entrevista de trabajo", "Conocer al equipo")
+#agenda.agregar_evento("18/03/2023", "16:00", "3 horas", "evento3","False", "Cita médica", "Chequeo anual")
 #agenda.mostrar_eventos()
 #agenda.modificar_evento(1, importancia="Alta", detalle="Presentación del proyecto actualizada") #modifico un evento
 #agenda.mostrar_eventos()
