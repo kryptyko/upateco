@@ -5,7 +5,7 @@
 #   MARCELO ARGAÑARAZ DNI 16722218
 #   NICOLAS LUTRI DNI 32630619
 #----------------------------------------
-#0.00003
+#0.00006
 #changelog
 #boton cargar evento, graba en archivo, no refresca el treeview donde aparecen los eventos
 # * falta boton eliminar evento
@@ -415,6 +415,7 @@ class Framebottom(tk.Frame):
         self.genda=Agenda()
         self.genda.agregar_evento(self.fechasrt,self.spinbox.get(), self.spinbox_d.get(),self.titulo.get(),self.variable_checkbox.get(),self.descripcion.get(),self.detalle.get())
         self.genda.volcar_datos_listbox() #cargo datos en la listbox pero se estan repitiendo
+        #cambio sdfiasdf
 class TreeViewFrame(tk.Frame):
     """clase para crear el frame y un par de botones"""
     def __init__(self, master):
